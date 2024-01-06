@@ -1,0 +1,211 @@
+Name:Omkar Namdev Garad
+Assignment No:B2
+====================================================================
+
+(Part A)
+1)Return Designation with Total Salary is Above 200000
+
+b1> db.employee.aggregate({$group:{_id:"$designation",totalsal:{$sum:"$salar
+y"}}},{$match:{totalsal:{$lte:200000}}})
+[
+  { _id: 'software engineer', totalsal: 80000 },
+  { _id: 'tester', totalsal: 42000 },
+  { _id: 'programmer', totalsal: 40000 },
+  { _id: 'analyst', totalsal: 70000 },
+  { _id: 'intern', totalsal: 12000 }
+]
+
+----------------------------------------------------------------
+2)Find Employee with Total Salary for Each City with Designation="DBA"
+
+b1> db.employee.aggregate([
+    {
+       $match: {
+          designation: "DBA"
+       }
+    },
+    {
+       $group: {
+          _id: "$address",
+          totalsal: {
+             $sum: "$salary"
+          }
+       }
+    }
+ ]);
+
+------------------------------------------------------------------
+3)Find Total Salary of Employee with Designation="DBA" for Each Company
+
+b1> db.employee.aggregate([
+    {
+       $match: {
+          designation: "DBA"
+       }
+    },
+    {
+       $group: {
+          _id: "$company_name",
+          totalsal: {
+             $sum: "$salary"
+          }
+       }
+    }
+ ]);
+
+----------------------------------------------------------
+4)Returns names and _id in upper case and in alphabetical order.
+
+b1> db.employee.aggregate([
+    {
+       $project: {
+          name: { $toUpper: "$name" },
+          _id: 1
+       }
+    },
+    {
+       $sort: {
+          name: 1
+       }
+    }
+ ]);
+[
+  { _id: ObjectId("653d19e61e239fffc19473f6"), name: '' },
+  { _id: ObjectId("653d187de8e67666a88c2024"), name: 'ABHI' },
+  { _id: ObjectId("653d15dee8e67666a88c2022"), name: 'ADITYA0' },
+  { _id: ObjectId("653cff56e8e67666a88c201f"), name: 'PRATIK' },
+  { _id: ObjectId("653cff56e8e67666a88c2020"), name: 'SANJIV' },
+  { _id: ObjectId("653d003de8e67666a88c2021"), name: 'SANKET' },
+  { _id: ObjectId("653d1665e8e67666a88c2023"), name: 'SOUMYA' }
+]
+----------------------------------------------------------
+5)Count all records from collection
+
+b1> db.employee.aggregate([{$group:{_id:null,count:{$sum:1}}}])
+[ { _id: null, count: 7 } ]
+
+-------------------------------------------------------------
+6)For each unique Designation, find avg Salary and output is sorted by AvgSal
+
+b1> db.employee.aggregate([{$group:{_id:"4designation",avgsal:{$avg:"$salary
+"}}},{$sort:{avgsal:1}}])
+[ { _id: '4designation', avgsal: 34857.142857142855 } ]
+
+--------------------------------------------------------------
+7)Return separates value in the Expertise array where Name of Employee="Swapnil"
+
+b1> db.employee.aggregate([{$unwind:"$expertise"},{$match:{name:"swapnil"}}]
+).pretty()
+
+----------------------------------------------------------------
+8)Return separates value in the Expertise array and return sum of each element of array
+
+b1> db.employee.aggregate([
+    {
+       $unwind: "$expertise"
+    },
+    {
+       $group: {
+          _id: "$expertise",
+          number: { $sum: 1 }
+       }
+    }
+ ]).pretty();
+
+-----------------------------------------------------------
+9)Return Array for Designation whose address is "Pune"
+
+db.employee.aggregate([{$match:{address:"pune"}},{$group:{_id:"$address",array_designation:{$push:"$designation"}}}])
+
+------------------------------------------------------------
+10)Return Max and Min Salary for each company.
+
+b1> db.employee.aggregate([{$group:{_id:"$company_name",min:{$min:"$salary"}
+,max:{$max:"$salary"}}}])
+[
+  { _id: 'TCS', min: 2000, max: 12000 },
+  { _id: 'infosys', min: 20000, max: 40000 },
+  { _id: null, min: 50000, max: 50000 },
+  { _id: 'amazon', min: 80000, max: 80000 }
+]
+
+===============================================================================
+
+(Part B)
+1)To Create Single Field Indexes on Designation
+
+b1> db.employee.createIndex({ designation: 1 })
+designation_1
+
+b1> db.employee.getIndexes()
+[ { v: 2, key: { _id: 1 }, name: '_id_' } ]
+
+-------------------------------------------------------------------
+2)To Create Compound Indexes on Name: 1, Age: -1
+
+b1> db.employee.createIndex({ name:1,age:-1 })
+name_1_age_-1
+
+b1> db.Comapnies.getIndexes()
+[
+	{ v: 2, key: { _id: 1 }, name: '_id_' },
+	{ v: 2, key: { designation: 1 }, name: 'designation_1' },
+	{ v: 2, key: { name: 1, age: -1 }, name: 'name_1_age_-1' }
+]
+
+-----------------------------------------------------------------------
+3)To Create Multikey Indexes on Expertise array
+
+b1> db.employee.createIndex({"expertise.java":1})
+db.employee.createIndex({"expertise.java":1})
+expertise.java_1
+
+
+------------------------------------------------------------------------
+4)Return a List of All Indexes on Collection
+
+b1> db.employee.getIndexes()
+[
+  { v: 2, key: { _id: 1 }, name: '_id_' },
+  { v: 2, key: { designation: 1 }, name: 'designation_1' },
+  { v: 2, key: { name: 1, age: -1 }, name: 'name_1_age_-1' }
+]
+
+---------------------------------------------------------------------------
+5)Rebuild Indexes
+
+b1> db.employee.reIndex()
+{
+  nIndexesWas: 4,
+  nIndexes: 4,
+  indexes: [
+    { v: 2, key: { _id: 1 }, name: '_id_' },
+    { v: 2, key: { designation: 1 }, name: 'designation_1' },
+    { v: 2, key: { name: 1, age: -1 }, name: 'name_1_age_-1' },
+    { v: 2, key: { 'expertise.java': 1 }, name: 'expertise.java_1' }
+  ],
+  ok: 1
+}
+
+-----------------------------------------------------------------------------
+6)Drop Index on Remove Specific Index
+
+b1> db.employee.dropIndex({designation:1})
+{ nIndexesWas: 4, ok: 1 }
+
+-----------------------------------------------------------------------------
+7)Remove All Indexes except for the _id index from a collection
+
+b1> db.employee.dropIndexes()
+{
+  nIndexesWas: 3,
+  msg: 'non-_id indexes dropped for collection',
+  ok: 1
+}
+
+======================================================================================
+
+
+
+
+

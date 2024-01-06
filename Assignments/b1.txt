@@ -1,0 +1,468 @@
+Name:Omkar Namdev Garad
+===========================================ṇṇ==========================
+test> use b1
+switched to db b1
+
+b1> db.employee.insertMany([
+ {
+	 name:"omkar",
+	 age:20,
+	 address:{city:"pune",pincode:411006},
+ 	 salary:100000,
+	 company_name:"google",
+	 designation:"developer"
+ },
+ {
+	 name:"pratik",
+ 	 age:21,
+	 address:{city:"nagar",pincode:411010},
+	 salary:50000,
+	 compaany_name:"TCS",
+	 designation:"analyst"
+ },
+ {
+	 name:"sanjiv",
+	 age:22,
+	 address:{city:"pune",pincode:411001},
+	 salary:10000,
+	 company_name:"TCS",
+	 designation:"intern"
+ }
+ ]);
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId("653cff56e8e67666a88c201e"),
+    '1': ObjectId("653cff56e8e67666a88c201f"),
+    '2': ObjectId("653cff56e8e67666a88c2020")
+  }
+}
+b1> db.employee.insertOne({
+	 name:"sanket",
+	 age:23,
+	 address:{city:"mumbai",pincode:412001},
+	 salary:20000,
+	 company_name:"infosys",
+	 designation:"analyst"
+	 });
+{
+  acknowledged: true,
+  insertedId: ObjectId("653d003de8e67666a88c2021")
+}
+b1> db.employee.insertOne({ name: "aditya0", age: 22, address: { city: "pune", pincode: 411001 }, salary: 80000, company_name: "amazon", designation: "software engineer" });
+{
+  acknowledged: true,
+  insertedId: ObjectId("653d15dee8e67666a88c2022")
+}
+
+b1> db.employee.insertOne({ name: "soumya", age: 32, address: { city: "pune", pincode: 411001 }, salary: 40000, company_name: "infosys", designation: "tester" });
+{
+  acknowledged: true,
+  insertedId: ObjectId("653d1665e8e67666a88c2023")
+}
+
+b1> db.employee.insertOne({ name: "abhi", age: 25, address: { city: "nashik", pincode: 411003 }, salary: 40000, company_name: "infosys", designation: "programmer" });
+{
+  acknowledged: true,
+  insertedId: ObjectId("653d187de8e67666a88c2024")
+}
+
+b1> db.employee.find().pretty()
+[
+  {
+    _id: ObjectId("653cff56e8e67666a88c201e"),
+    name: 'omkar',
+    age: 20,
+    address: { city: 'pune', pincode: 411006 },
+    salary: 100000,
+    company_name: 'google',
+    designation: 'developer'
+  },
+  {
+    _id: ObjectId("653cff56e8e67666a88c201f"),
+    name: 'pratik',
+    age: 21,
+    address: { city: 'nagar', pincode: 411010 },
+    salary: 50000,
+    compaany_name: 'TCS',
+    designation: 'analyst'
+  },
+  {
+    _id: ObjectId("653cff56e8e67666a88c2020"),
+    name: 'sanjiv',
+    age: 22,
+    address: { city: 'pune', pincode: 411001 },
+    salary: 10000,
+    company_name: 'TCS',
+    designation: 'intern'
+  },
+  {
+    _id: ObjectId("653d003de8e67666a88c2021"),
+    name: 'sanket',
+    age: 23,
+    address: { city: 'mumbai', pincode: 412001 },
+    salary: 20000,
+    company_name: 'infosys',
+    designation: 'analyst'
+  },
+  {
+    _id: ObjectId("653d15dee8e67666a88c2022"),
+    name: 'aditya0',
+    age: 22,
+    address: { city: 'pune', pincode: 411001 },
+    salary: 80000,
+    company_name: 'amazon',
+    designation: 'software engineer'
+  },
+  {
+    _id: ObjectId("653d1665e8e67666a88c2023"),
+    name: 'soumya',
+    age: 32,
+    address: { city: 'pune', pincode: 411001 },
+    salary: 40000,
+    company_name: 'infosys',
+    designation: 'tester'
+  },
+
+	 {
+    _id: ObjectId("653d187de8e67666a88c2024"),
+    name: 'abhi',
+    age: 25,
+    address: { city: 'nashik', pincode: 411003 },
+    salary: 40000,
+    company_name: 'infosys',
+    designation
+]
+
+===================================================================================================
+(Questions)
+
+1)Select all documents where the Designation field has the value "Programmer" and the
+value of the salary field is greater than 30000
+
+b1> db.employee.find({designation:"programmer",salary:{$gt:30000}}).pretty()
+
+[
+  {
+    _id: ObjectId("653d187de8e67666a88c2024"),
+    name: 'abhi',
+    age: 25,
+    address: { city: 'nashik', pincode: 411003 },
+    salary: 40000,
+    company_name: 'infosys',
+    designation: 'programmer'
+  }
+]
+
+---------------------------------------------------------------------------------------------------
+2)Creates a new document if no document in the employee collection contains {Designation: "Tester", Company_name: "TCS", Age: 25}
+
+b1> db.employee.update({designation:"tester",company_name:"TCS"},{$set:{age:25}},{upsert:true})
+DeprecationWarning: Collection.update() is deprecated. Use updateOne, updateMany, or bulkWrite.
+{
+  acknowledged: true,
+  insertedId: ObjectId("653d19e61e239fffc19473f6"),
+  matchedCount: 0,
+  modifiedCount: 0,
+  upsertedCount: 1
+}
+
+----------------------------------------------------------------------------------------------------
+3)Selects all documents in the collection where the field age has a value less than 30 or
+the value of the salary field is greater than 40000.
+
+
+b1> db.employee.find({
+...    $or: [
+...       { age: { $lt: 30 } },
+...       { salary: { $gt: 40000 } }
+...    ]
+... }).pretty();
+[
+  {
+    _id: ObjectId("653cff56e8e67666a88c201e"),
+    name: 'omkar',
+    age: 20,
+    address: { city: 'pune', pincode: 411006 },
+    salary: 100000,
+    company_name: 'google',
+    designation: 'developer'
+  },
+  {
+    _id: ObjectId("653cff56e8e67666a88c201f"),
+    name: 'pratik',
+    age: 21,
+    address: { city: 'nagar', pincode: 411010 },
+    salary: 50000,
+    compaany_name: 'TCS',
+    designation: 'analyst'
+  },
+  {
+    _id: ObjectId("653cff56e8e67666a88c2020"),
+    name: 'sanjiv',
+    age: 22,
+    address: { city: 'pune', pincode: 411001 },
+    salary: 10000,
+    company_name: 'TCS',
+    designation: 'intern'
+  },
+  {
+    _id: ObjectId("653d003de8e67666a88c2021"),
+    name: 'sanket',
+    age: 23,
+    address: { city: 'mumbai', pincode: 412001 },
+    salary: 20000,
+    company_name: 'infosys',
+    designation: 'analyst'
+  },
+  {
+    _id: ObjectId("653d15dee8e67666a88c2022"),
+    name: 'aditya0',
+    age: 22,
+    address: { city: 'pune', pincode: 411001 },
+    salary: 80000,
+    company_name: 'amazon',
+    designation: 'software engineer'
+  },
+  {
+    _id: ObjectId("653d187de8e67666a88c2024"),
+    name: 'abhi',
+    age: 25,
+    address: { city: 'nashik', pincode: 411003 },
+    salary: 40000,
+    company_name: 'infosys',
+    designation: 'programmer'
+  },
+  {
+    _id: ObjectId("653d19e61e239fffc19473f6"),
+    company_name: 'TCS',
+    designation: 'tester',
+    age: 25
+  }
+]
+
+----------------------------------------------------------------------------------------------------------
+4)Matches all documents where the value of the field Address is an embedded
+document that contains only the field city with the value "Pune" and the field
+Pin_code with the value "411001".
+
+b1> db.employee.find({
+...    $and: [
+...       { "address.city": "pune" },
+...       { "address.pincode": 411001 }
+...    ]
+... }).pretty();
+[
+  {
+    _id: ObjectId("653cff56e8e67666a88c2020"),
+    name: 'sanjiv',
+    age: 22,
+    address: { city: 'pune', pincode: 411001 },
+    salary: 10000,
+    company_name: 'TCS',
+    designation: 'intern'
+  },
+  {
+    _id: ObjectId("653d15dee8e67666a88c2022"),
+    name: 'aditya0',
+    age: 22,
+    address: { city: 'pune', pincode: 411001 },
+    salary: 80000,
+    company_name: 'amazon',
+    designation: 'software engineer'
+  },
+  {
+    _id: ObjectId("653d1665e8e67666a88c2023"),
+    name: 'soumya',
+    age: 32,
+    address: { city: 'pune', pincode: 411001 },
+    salary: 40000,
+    company_name: 'infosys',
+    designation: 'tester'
+  }
+]
+
+
+--------------------------------------------------------------------------------------------------------
+5)Finds all documents with Company_name: "TCS" and modifies their salary field by
+2000
+
+b1> db.employee.update({company_name:"TCS"},{$inc:{salary:2000}},{multi:true
+})
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 2,
+  modifiedCount: 2,
+  upsertedCount: 0
+}
+b1> db.employee.find({company_name:"TCS"}).pretty()
+[
+  {
+    _id: ObjectId("653cff56e8e67666a88c2020"),
+    name: 'sanjiv',
+    age: 22,
+    address: { city: 'pune', pincode: 411001 },
+    salary: 12000,
+    company_name: 'TCS',
+    designation: 'intern'
+  },
+  {
+    _id: ObjectId("653d19e61e239fffc19473f6"),
+    company_name: 'TCS',
+    designation: 'tester',
+    age: 25,
+    salary: 2000
+  }
+
+---------------------------------------------------------------------------------------------------
+6)Find documents where Designation is not equal to "Developer"
+
+b1> db.employee.find({designation:{$ne:"developer"}}).pretty()
+[
+  {
+    _id: ObjectId("653cff56e8e67666a88c201f"),
+    name: 'pratik',
+    age: 21,
+    address: { city: 'nagar', pincode: 411010 },
+    salary: 50000,
+    compaany_name: 'TCS',
+    designation: 'analyst'
+  },
+  {
+    _id: ObjectId("653cff56e8e67666a88c2020"),
+    name: 'sanjiv',
+    age: 22,
+    address: { city: 'pune', pincode: 411001 },
+    salary: 12000,
+    company_name: 'TCS',
+    designation: 'intern'
+  },
+  {
+    _id: ObjectId("653d003de8e67666a88c2021"),
+    name: 'sanket',
+    age: 23,
+    address: { city: 'mumbai', pincode: 412001 },
+    salary: 20000,
+    company_name: 'infosys',
+    designation: 'analyst'
+  },
+  {
+    _id: ObjectId("653d15dee8e67666a88c2022"),
+    name: 'aditya0',
+    age: 22,
+    address: { city: 'pune', pincode: 411001 },
+    salary: 80000,
+    company_name: 'amazon',
+    designation: 'software engineer'
+  },
+  {
+    _id: ObjectId("653d1665e8e67666a88c2023"),
+    name: 'soumya',
+    age: 32,
+    address: { city: 'pune', pincode: 411001 },
+    salary: 40000,
+    company_name: 'infosys',
+    designation: 'tester'
+  },
+  {
+    _id: ObjectId("653d187de8e67666a88c2024"),
+    name: 'abhi',
+    age: 25,
+    address: { city: 'nashik', pincode: 411003 },
+    salary: 40000,
+    company_name: 'infosys',
+    designation: 'programmer'
+  },
+  {
+    _id: ObjectId("653d19e61e239fffc19473f6"),
+    company_name: 'TCS',
+    designation: 'tester',
+    age: 25,
+    salary: 2000
+  }
+]
+
+-------------------------------------------------------------------------------------------------------
+7)Find _id, Designation, Address and Name from all documents where Company_name
+is "Infosys"
+
+b1> db.employee.find({company_name:"infosys"},{_id:1,designation:1,address:1,name:1}).pretty()
+[
+  {
+    _id: ObjectId("653d003de8e67666a88c2021"),
+    name: 'sanket',
+    address: { city: 'mumbai', pincode: 412001 },
+    designation: 'analyst'
+  },
+  {
+    _id: ObjectId("653d1665e8e67666a88c2023"),
+    name: 'soumya',
+    address: { city: 'pune', pincode: 411001 },
+    designation: 'tester'
+  },
+  {
+    _id: ObjectId("653d187de8e67666a88c2024"),
+    name: 'abhi',
+    address: { city: 'nashik', pincode: 411003 },
+    designation: 'programmer'
+  }
+]
+
+--------------------------------------------------------------------------------------------------------
+8)Selects all documents in the employee collection where the value of the Designation
+is either "Developer" or "Tester"
+
+b1> db.employee.find({$or:[{designation:"developer"},{designation:"tester"}]}).pretty()
+[
+  {
+    _id: ObjectId("653cff56e8e67666a88c201e"),
+    name: 'omkar',
+    age: 20,
+    address: { city: 'pune', pincode: 411006 },
+    salary: 100000,
+    company_name: 'google',
+    designation: 'developer'
+  },
+  {
+    _id: ObjectId("653d1665e8e67666a88c2023"),
+    name: 'soumya',
+    age: 32,
+    address: { city: 'pune', pincode: 411001 },
+    salary: 40000,
+    company_name: 'infosys',
+    designation: 'tester'
+  },
+  {
+    _id: ObjectId("653d19e61e239fffc19473f6"),
+    company_name: 'TCS',
+    designation: 'tester',
+    age: 25,
+    salary: 2000
+  }
+]
+
+----------------------------------------------------------------------------------------------------------
+9)Find all document with Exact Match on an Array having Expertise:
+['Mongodb','Mysql', 'Cassandra']
+
+ db.employee.find({expertise:["mongodb","mysql","cassandra"]}).pretty()
+
+----------------------------------------------------------------------------------------------------------
+10)Drop Single documents where designation="Developer"
+
+b1> db.employee.find({expertise:["mongodb","mysql","cassandra"]}).pretty()
+
+b1> db.employee.remove({designation:"developer"},1)
+DeprecationWarning: Collection.remove() is deprecated. Use deleteOne, deleteMany, findOneAndDelete, or bulkWrite.
+{ acknowledged: true, deletedCount: 1 }
+
+
+====================================================================================================
+
+
+
+
+
+
+

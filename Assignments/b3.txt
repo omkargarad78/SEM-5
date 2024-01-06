@@ -1,0 +1,265 @@
+Name:Omkar Namdev Garad
+Assignment No:B3
+
+==========================================================================================
+(Questions)
+
+1)Return the Total Salary of per Company
+
+b1> var mapFunction = function() {
+   emit(this.company_name, this.salary);
+   };
+
+b1> var reduceFunction = function(key, values) {
+   return Array.sum(values);
+ };
+
+b1> db.employee.mapReduce(
+   mapFunction,
+   reduceFunction,
+   {
+     out: "total_salary_per_company"
+   }
+ );
+DeprecationWarning: Collection.mapReduce() is deprecated. Use an aggregation instead.
+See https://docs.mongodb.com/manual/core/map-reduce for details.
+{ result: 'total_salary_per_company', ok: 1 }
+b1> db.total_salary_per_company.find();
+[
+  { _id: null, value: 50000 },
+  { _id: 'amazon', value: 80000 },
+  { _id: 'TCS', value: 14000 },
+  { _id: 'infosys', value: 100000 }
+]
+
+---------------------------------------------------------------------
+2)Return the Total Salary of Company Name:"TCS"
+
+b1> var mapFunction = function() {
+   if (this.company_name === "TCS") {
+     emit(this.company_name, this.salary);
+   }
+ };
+
+b1> var reduceFunction = function(key, values) {
+   return Array.sum(values);
+ };
+
+b1> db.employee.mapReduce(
+   mapFunction,
+   reduceFunction,
+   {
+     out: { inline: 1 },
+     query: { company_name: "TCS" }
+   }
+ );
+{ results: [ { _id: 'TCS', value: 14000 } ], ok: 1 }
+
+--------------------------------------------------------------
+3)Return the Avg Salary of Company whose address is “Pune"
+
+b1> var mapFunction = function() {
+   if (this.address === "Pune") {
+     emit(this.company_name, this.salary);
+   }
+ };
+
+b1> var reduceFunction = function(key, values) {
+   var reducedVal = {
+     totalSalary: 0,
+     count: 0
+   };
+
+   values.forEach(function(value) {
+     reducedVal.totalSalary += value;
+     reducedVal.count += 1;
+   });
+
+   return reducedVal;
+ };
+
+b1> var finalizeFunction = function(key, reducedVal) {
+   return reducedVal.totalSalary / reducedVal.count;
+ };
+
+b1> db.employee.mapReduce(
+   mapFunction,
+   reduceFunction,
+   {
+     out: "average_salary_per_company",
+     finalize: finalizeFunction,
+     query: { address: "Pune" }
+   }
+ );
+{ result: 'average_salary_per_company', ok: 1 }
+
+practical> db.average_salary_per_company.find()
+[
+	{ _id: 'amazon', value: 80000 },
+	{ _id: 'infosys', value: 30000 },
+	{ _id: 'tcs', value: 12000 }
+]
+
+-----------------------------------------------------------------------
+4)Return the Total Salary for each Designation of Infosys.
+
+b1> var mapFunction = function() {
+   if (this.company_name === "Infosys") {
+     emit(this.designation, this.salary);
+   }
+ };
+
+b1> var reduceFunction = function(key, values) {
+   return Array.sum(values);
+ };
+
+b1> db.employee.mapReduce(
+   mapFunction,
+   reduceFunction,
+   {
+     out: "total_salary_per_designation",
+     query: { company_name: "Infosys" }
+   }
+ );
+{ result: 'total_salary_per_designation', ok: 1 }
+
+-------------------------------------------------------------------
+5)Return total count for “State=AP”
+
+
+b1> var mapFunction = function() {
+   if (this.State === "AP") {
+     emit("count", 1);
+   }
+ };
+
+b1> var reduceFunction = function(key, values) {
+   return Array.sum(values);
+ };
+
+b1> db.collection_name.mapReduce(
+   mapFunction,
+   reduceFunction,
+   {
+     out: { inline: 1 },
+     query: { State: "AP" }
+   }
+ );
+{ results: [], ok: 1 }
+
+---------------------------------------------------------------------
+6)Return Count for State AP and Age greater than 40
+
+b1> var mapFunction = function() {
+   if (this.State === "AP" && this.Age > 40) {
+     emit("count", 1);
+   }
+ };
+
+b1> var reduceFunction = function(key, values) {
+   return Array.sum(values);
+ };
+
+b1> db.collection_name.mapReduce(
+   mapFunction,
+   reduceFunction,
+   {
+     out: { inline: 1 },
+     query: { State: "AP", Age: { lection_name.mapReduce(
+   mapFunction,
+   reduceFunction,
+   {
+     out: { inline: 1 },
+     query: { State: "AP", Age: { $gt: 40 } }
+   }
+ );
+
+b1> db.emp.mapReduce(mapFunction6,reduceFunction6,{out:'AP_count_with_age_gt_40'})
+{ result: 'AP_count_with_age_gt_40', ok: 1 }
+practical> db.AP_count_with_age_gt_40.find()
+[ { _id: 'count', value: 1 } ]
+
+===============================================================================
+(part B)
+
+Problem Statement:
+Create a sample collection orders with these documents
+
+1)
+
+map2> var mapFunction = function() {
+...   emit(this.cust_id, this.price);
+... };
+
+map2> var reduceFunction = function(key, values) {
+...   return Array.sum(values);
+... };
+
+map2> db.orders.mapReduce(
+...   mapFunction,
+...   reduceFunction,
+...   {
+...     out: "total_price_per_customer"
+...   }
+... );
+DeprecationWarning: Collection.mapReduce() is deprecated. Use an aggregation instead.
+See https://docs.mongodb.com/manual/core/map-reduce for details.
+{ result: 'total_price_per_customer', ok: 1 }
+map2> db.total_price_per_customer.find();
+[
+  { _id: 'Ant O. Knee', value: 95 },
+  { _id: 'Cam Elot', value: 60 },
+  { _id: 'Don Quis', value: 155 },
+  { _id: 'Busby Bee', value: 125 }
+]
+
+-----------------------------------------------------------------
+2)
+
+map2> var mapFunction = function() {
+...   for (var i = 0; i < this.items.length; i++) {
+...     var item = this.items[i];
+...     emit(item.sku, { quantity: item.qty, price: item.price });
+...   }
+... };
+
+map2> var reduceFunction = function(key, values) {
+...   var reducedVal = { quantity: 0, price: 0 };
+...   values.forEach(function(value) {
+...     reducedVal.quantity += value.quantity;
+...     reducedVal.price += value.price;
+...   });
+...   return reducedVal;
+... };
+
+map2> var finalizeFunction = function(key, reducedVal) {
+...   reducedVal.avgQuantityPerItem = reducedVal.quantity / reducedVal.price;
+...   return reducedVal;
+... };
+
+map2> db.orders.mapReduce(
+...   mapFunction,
+...   reduceFunction,
+...   {
+...     out: "total_quantity_price_avg",
+...   }
+... );
+{ result: 'total_quantity_price_avg', ok: 1 }
+map2> db.total_quantity_price_avg.find();
+[
+  { _id: 'pears', value: { quantity: 10, price: 2.5 } },
+  { _id: 'oranges', value: { quantity: 63, price: 17.5 } },
+  { _id: 'apples', value: { quantity: 35, price: 10 } },
+  { _id: 'carrots', value: { quantity: 15, price: 2 } },
+  { _id: 'chocolates', value: { quantity: 15, price: 30 } }
+]
+
+=============================================================================
+
+
+
+
+
+
+
+
